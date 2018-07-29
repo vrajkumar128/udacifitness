@@ -126,5 +126,5 @@ export const getMetricMetaInfo = (metric) => {
     }
   };
 
-  return type metric === 'undefined' ? info : info[metric];
+  return typeof metric === 'undefined' ? info : info[metric];
 };
