@@ -64,7 +64,7 @@ export const getMetricMetaInfo = (metric) => {
       displayName: 'Bike',
       max: 100,
       unit: 'miles',
-      step: 100,
+      step: 1,
       type: 'steppers',
       getIcon: () => (
         <View>
