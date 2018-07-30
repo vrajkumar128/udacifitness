@@ -1,13 +1,14 @@
 import React from 'react';
-import { View, Text, Button, TouchableOpacity } from 'react-native';
+import { View, Text, Button, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import { getMetricMetaInfo, timeToString, getDailyReminderValue } from '../utils/helpers';
 import UdaciSlider from './UdaciSlider';
-import UdaciStepper from './UdaciStepper';
+import UdaciSteppers from './UdaciStepper';
 import DateHeader from './DateHeader';
 import { Ionicons } from 'react-native-vector-icons';
 import { submitEntry, removeEntry } from '../utils/api';
 import { connect } from 'react-redux';
 import { addEntry } from '../actions';
+import { purple, white } from '../utils/colors';
 
 class AddEntry extends React.Component {
   state = {
@@ -86,28 +87,31 @@ class AddEntry extends React.Component {
   render() {
     const metaInfo = getMetricMetaInfo();
 
-    // If data for this day have already been submitted, show a screen
+    // If data for this day have already been submitted, show a corresponding screen
     if (this.props.alreadyLogged) {
       return (
-        <View>
-          <Ionicons name="ios-happy-outline" size={100} />
+        <View style={styles.center}>
+          <Ionicons
+            name={Platform.OS === 'ios' ? 'ios-happy-outline' : 'md-happy'}
+            size={100}
+          />
           <Text>You already logged your information for today</Text>
-          <TouchableOpacity onPress={this.reset}>
-            <Text>Reset</Text>
+          <TouchableOpacity style={{ padding: 10 }} onPress={this.reset}>
+            <Text style={{ textAlign: 'center', color: purple }}>Reset</Text>
           </TouchableOpacity>
         </View>
       );
     }
 
     return (
-      <View>
+      <View style={styles.container}>
         <DateHeader date={(new Date()).toLocaleDateString()} />
         {Object.keys(metaInfo).map((metric) => {
           const { getIcon, type, ...rest } = metaInfo[metric];
           const value = this.state[metric];
 
           return (
-            <View key={metric}>
+            <View key={metric} style={styles.row}>
               {getIcon()}
               {type === 'slider'
                 ? <UdaciSlider
@@ -115,7 +119,7 @@ class AddEntry extends React.Component {
                     onValueChange={(value) => this.slide(metric, value)}
                     {...rest}
                   />
-                : <UdaciStepper
+                : <UdaciSteppers
                     value={value}
                     onIncrement={() => this.increment(metric)}
                     onDecrement={() => this.decrement(metric)}
@@ -124,11 +128,61 @@ class AddEntry extends React.Component {
             </View>
           );
         })}
-        <Button title="submit" onPress={this.submit} />
+        <TouchableOpacity
+          onPress={this.submit}
+          style={Platform.OS === 'ios'
+            ? styles.iosSubmitBtn
+            : styles.AndroidSubmitBtn}
+        >
+          <Text style={styles.submitBtnText}>SUBMIT</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: white
+  },
+  row: {
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center'
+  },
+  iosSubmitBtn: {
+    backgroundColor: purple,
+    padding: 10,
+    borderRadius: 7,
+    height: 45,
+    marginLeft: 40,
+    marginRight: 40
+  },
+  AndroidSubmitBtn: {
+    backgroundColor: purple,
+    paddingLeft: 30,
+    paddingRight: 30,
+    height: 45,
+    borderRadius: 2,
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  submitBtnText: {
+    color: white,
+    fontSize: 22,
+    textAlign: 'center'
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 30,
+    marginRight: 30
+  }
+});
 
 // Grab data from Redux store as props
 const mapStateToProps = (state) => {
@@ -137,7 +191,7 @@ const mapStateToProps = (state) => {
   return {
     alreadyLogged: state[key] && typeof state[key].today === 'undefined'
   };
-}
+};
 
 // Connect component to Redux store
 export default connect(mapStateToProps)(AddEntry);
