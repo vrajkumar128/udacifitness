@@ -42,6 +42,7 @@ export const timeToString = (time = Date.now()) => {
   return todayUTC.toISOString().split('T')[0];
 };
 
+// Retrieve metadata for a given metric
 export const getMetricMetaInfo = (metric) => {
   const info = {
     run: {
@@ -128,3 +129,8 @@ export const getMetricMetaInfo = (metric) => {
 
   return typeof metric === 'undefined' ? info : info[metric];
 };
+
+// If no data has been logged today, return a reminder
+export const getDailyReminderValue = () => ({
+  today: ":wave: Don't forget to log your data today!"
+});
