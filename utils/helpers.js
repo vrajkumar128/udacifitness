@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, StyleSheet, Platform } from 'react-native';
+import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from 'react-native-vector-icons';
 import { white, red, orange, blue, lightPurp, pink, gray } from './colors';
 
 // Determine whether num is between x and y
@@ -45,7 +45,7 @@ export const timeToString = (time = Date.now()) => {
 const styles = StyleSheet.create({
   iconContainer: {
     padding: 5,
-    borderRadius: 8,
+    borderRadius: Platform.OS === 'ios' ? 16 : 2,
     width: 50,
     height: 50,
     justifyContent: 'center',

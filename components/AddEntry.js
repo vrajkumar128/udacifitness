@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, Button, TouchableOpacity, Platform, StyleSheet } from 'react-native';
+import { View, Text, Button, TouchableNativeFeedback,
+  TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import { getMetricMetaInfo, timeToString, getDailyReminderValue } from '../utils/helpers';
 import UdaciSlider from './UdaciSlider';
 import UdaciSteppers from './UdaciStepper';
@@ -128,14 +129,18 @@ class AddEntry extends React.Component {
             </View>
           );
         })}
-        <TouchableOpacity
-          onPress={this.submit}
-          style={Platform.OS === 'ios'
-            ? styles.iosSubmitBtn
-            : styles.AndroidSubmitBtn}
-        >
-          <Text style={styles.submitBtnText}>SUBMIT</Text>
-        </TouchableOpacity>
+        {Platform.OS === 'android'
+          ? (
+            <TouchableNativeFeedback onPress={this.submit} style={styles.AndroidSubmitBtn}>
+              <Text style={styles.submitBtnText}>SUBMIT</Text>
+            </TouchableNativeFeedback>
+          )
+          : (
+            <TouchableOpacity onPress={this.submit} style={styles.iosSubmitBtn}>
+              <Text style={styles.submitBtnText}>SUBMIT</Text>
+            </TouchableOpacity>
+          )
+        }
       </View>
     );
   }

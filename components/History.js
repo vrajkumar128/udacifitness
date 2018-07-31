@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Platform,
+  TouchableNativeFeedback, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
 import { receiveEntries, addEntry } from '../actions';
 import { timeToString, getDailyReminderValue } from '../utils/helpers';
@@ -7,8 +8,13 @@ import { fetchCalendarResults } from '../utils/api';
 import UdaciFitnessCalendar from 'udacifitness-calendar';
 import { white } from '../utils/colors';
 import DateHeader from './DateHeader';
+import MetricCard from './MetricCard';
 
 class History extends React.Component {
+  state = {
+    loading: true
+  }
+
   // Initialize Redux state with calendar entries
   async componentDidMount() {
     const entries = await fetchCalendarResults();
@@ -20,6 +26,10 @@ class History extends React.Component {
         [timeToString()]: getDailyReminderValue()
       }));
     }
+
+    this.setState({
+      loading: false
+    });
   }
 
   // Render a calendar item
@@ -32,9 +42,9 @@ class History extends React.Component {
               {today}
             </Text>
           </View>
-        : <TouchableOpacity onPress={() => console.log("Pressed!")}>
-            <Text>{JSON.stringify(metrics)}</Text>
-          </TouchableOpacity>}
+        : <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#eee')} onPress={() => console.log("Pressed!")}>
+            {MetricCard(metrics, formattedDate)}
+          </TouchableNativeFeedback>}
     </View>
   )
 
@@ -50,6 +60,11 @@ class History extends React.Component {
 
   render() {
     const { entries } = this.props;
+    const { loading } = this.state;
+
+    if (loading) {
+      return <ActivityIndicator size="large" color="#0000ff" />;
+    }
 
     return (
       <UdaciFitnessCalendar
