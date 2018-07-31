@@ -1,26 +1,33 @@
 import { AsyncStorage } from 'react-native';
-import { CALENDAR_STORAGE_KEY } from './_calendar';
+import { CALENDAR_STORAGE_KEY, formatCalendarResults } from './_calendar';
 
+// Retrieve calendar data
+export const fetchCalendarResults = async () => {
+  try {
+    const results = await AsyncStorage.getItem(CALENDAR_STORAGE_KEY);
+    return formatCalendarResults(results);
+  } catch (err) {
+    console.error("Error:", err);
+    alert('There was an error fetching the calendar entries.');
+  }
+};
+
+// Add a new entry to the calendar
 export const submitEntry = async ({ entry, key }) => {
   try {
-    const localStorageEntry = await AsyncStorage.mergeItem(CALENDAR_STORAGE_KEY, JSON.stringify({
+    await AsyncStorage.mergeItem(CALENDAR_STORAGE_KEY, JSON.stringify({
       [key]: entry
     }));
-    return localStorageEntry;
   } catch (err) {
     console.error("Error:", err);
     alert('There was an error with your submission. Please try again.');
   }
 };
 
+// Reset today's calendar entry
 export const removeEntry = async (key) => {
   try {
-    const results = await AsyncStorage.getItem(CALENDAR_STORAGE_KEY);
-    const data = JSON.parse(results);
-    data[key] = undefined;
-    delete data[key];
-    AsyncStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(data));
-    return data;
+    await AsyncStorage.removeItem(CALENDAR_STORAGE_KEY);
   } catch (err) {
     console.error("Error:", err);
     alert('There was an error resetting the data. Please try again.');
