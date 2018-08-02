@@ -129,16 +129,18 @@ class AddEntry extends React.Component {
             </View>
           );
         })}
-        {Platform.OS === 'android'
+        {Platform.OS === 'ios'
           ? (
-            <TouchableNativeFeedback onPress={this.submit} style={styles.AndroidSubmitBtn}>
-              <Text style={styles.submitBtnText}>SUBMIT</Text>
-            </TouchableNativeFeedback>
-          )
-          : (
             <TouchableOpacity onPress={this.submit} style={styles.iosSubmitBtn}>
               <Text style={styles.submitBtnText}>SUBMIT</Text>
             </TouchableOpacity>
+          )
+          : (
+            <TouchableNativeFeedback onPress={this.submit}>
+              <View style={styles.AndroidSubmitBtn}>
+                <Text style={styles.submitBtnText}>SUBMIT</Text>
+              </View>
+            </TouchableNativeFeedback>
           )
         }
       </View>
