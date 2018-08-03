@@ -42,7 +42,13 @@ class History extends React.Component {
               {today}
             </Text>
           </View>
-        : <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#eee')} onPress={() => console.log("Pressed!")}>
+        : <TouchableNativeFeedback
+            background={TouchableNativeFeedback.Ripple('#eee')}
+            onPress={() => this.props.navigation.navigate(
+              'EntryDetail',
+              { entryId: key }
+            )}
+          >
             {MetricCard(metrics, formattedDate)}
           </TouchableNativeFeedback>}
     </View>
