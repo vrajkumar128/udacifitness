@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { View, Platform, StatusBar } from 'react-native';
 import AddEntry from './components/AddEntry';
 import { createStore } from 'redux';
@@ -12,12 +12,14 @@ import { FontAwesome, Ionicons } from 'react-native-vector-icons';
 import { Constants } from 'expo';
 import EntryDetail from './components/EntryDetail';
 
+// Create styled status bar
 const UdaciStatusBar = ({ backgroundColor, ...rest }) => (
   <View style={{ backgroundColor, height: Constants.statusBarHeight }}>
     <StatusBar translucent backgroundColor={backgroundColor} {...rest} />
   </View>
 );
 
+// Create tab navigator
 const Tabs = (Platform.OS === 'ios' ? createBottomTabNavigator : createMaterialTopTabNavigator)({
   History: {
     screen: History,
@@ -52,9 +54,13 @@ const Tabs = (Platform.OS === 'ios' ? createBottomTabNavigator : createMaterialT
   }
 });
 
+// Create stack navigator
 const MainNavigator = createStackNavigator({
   Home: {
-    screen: Tabs
+    screen: Tabs,
+    navigationOptions: {
+      header: null
+    }
   },
   EntryDetail: {
     screen: EntryDetail,
@@ -67,7 +73,7 @@ const MainNavigator = createStackNavigator({
   }
 });
 
-export default class App extends React.Component {
+export default class App extends Component {
   render() {
     return (
       <Provider store={createStore(reducer, middleware)}>
