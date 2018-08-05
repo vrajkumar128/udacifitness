@@ -10,6 +10,18 @@ export const isBetween = (num, x, y) => num >= x && num <= y;
 export const calculateDirection = (heading) => {
   let direction = '';
 
+  const headingSwitch = {
+    1: 'North',
+    2: 'Northeast',
+    3: 'East',
+    4: 'Southeast',
+    5: 'South',
+    6: 'Southwest',
+    7: 'West',
+    8: 'Northwest',
+    default: 'Calculating'
+  };
+
   if (isBetween(heading, 0, 22.5)) {
     direction = 'North';
   } else if (isBetween(heading, 22.5, 67.5)) {
@@ -144,5 +156,5 @@ export const getMetricMetaInfo = (metric) => {
 
 // If no data has been logged today, return a reminder
 export const getDailyReminderValue = () => ({
-  today: ":wave: Don't forget to log your data today!"
+  today: "Don't forget to log your data today!"
 });

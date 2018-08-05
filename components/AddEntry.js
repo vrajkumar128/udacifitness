@@ -10,6 +10,7 @@ import { submitEntry, removeEntry } from '../utils/api';
 import { connect } from 'react-redux';
 import { addEntry } from '../actions';
 import { purple, white } from '../utils/colors';
+import { NavigationActions } from 'react-navigation';
 
 class AddEntry extends React.Component {
   state = {
@@ -53,6 +54,13 @@ class AddEntry extends React.Component {
     });
   }
 
+  // Redirect to home
+  toHome = () => {
+    this.props.navigation.dispatch(NavigationActions.back({
+      key: 'AddEntry'
+    }));
+  }
+
   // Submit data for the day
   submit = () => {
     const key = timeToString();
@@ -63,7 +71,7 @@ class AddEntry extends React.Component {
       [key]: entry
     }));
 
-    // TODO: Redirect to Home, clear local notifications
+    // TODO: Clear local notifications
 
     this.setState({
       run: 0,
@@ -72,6 +80,8 @@ class AddEntry extends React.Component {
       sleep: 0,
       eat: 0
     });
+
+    this.toHome();
   }
 
   // Reset data for the day
@@ -82,7 +92,8 @@ class AddEntry extends React.Component {
     this.props.dispatch(addEntry({
       [key]: getDailyReminderValue()
     }));
-    // TODO: Redirect to Home
+
+    this.toHome();
   }
 
   render() {

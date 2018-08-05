@@ -1,10 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import { white } from '../utils/colors';
 import MetricCard from './MetricCard';
+import { addEntry } from '../actions';
+import { removeEntry } from '../utils/api';
+import { timeToString, getDailyReminderValue } from '../utils/helpers';
 
 class EntryDetail extends React.Component {
+  // Return formatted date as screen header
   static navigationOptions = ({ navigation }) => {
     const { entryId } = navigation.state.params;
 
@@ -17,6 +21,19 @@ class EntryDetail extends React.Component {
     };
   }
 
+  // Re-render only if metrics exist
+  shouldComponentUpdate(nextProps) {
+    return nextProps.metrics !== null && !nextProps.metrics.today;
+  }
+
+  // Reset an entry
+  reset = () => {
+    const { remove, goBack, entryId } = this.props;
+
+    remove();
+    goBack();
+  }
+
   render() {
     const { metrics } = this.props;
     console.log(metrics);
@@ -24,6 +41,9 @@ class EntryDetail extends React.Component {
     return (
       <View style={styles.container}>
         {MetricCard(metrics)}
+        <TouchableOpacity onPress={this.reset} style={{ margin: 20 }}>
+          <Text style={{ textAlign: 'center' }}>RESET</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -37,6 +57,7 @@ const styles = StyleSheet.create({
   }
 })
 
+// Grab data from Redux store as props
 const mapStateToProps = (state, { navigation }) => {
   const { entryId } = navigation.state.params;
 
@@ -46,4 +67,19 @@ const mapStateToProps = (state, { navigation }) => {
   };
 };
 
-export default connect(mapStateToProps)(EntryDetail);
+// Pass dispatch-dependent methods as props
+const mapDispatchToProps = (dispatch, { navigation }) => {
+  const { entryId } = navigation.state.params;
+
+  return {
+    remove: () => dispatch(addEntry({
+      [entryId]: timeToString() === entryId
+        ? getDailyReminderValue()
+        : null
+    })),
+    goBack: () => navigation.goBack()
+  };
+};
+
+// Connect component to Redux store
+export default connect(mapStateToProps, mapDispatchToProps)(EntryDetail);
