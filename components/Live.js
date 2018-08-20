@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, ActivityIndicator, Platform,
-  TouchableNativeFeedback, TouchableOpacity, StyleSheet } from 'react-native';
+  TouchableNativeFeedback, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { Foundation } from 'react-native-vector-icons';
 import { purple, white } from '../utils/colors';
 import { Location, Permissions } from 'expo';
@@ -10,7 +10,8 @@ export default class Live extends Component {
   state = {
     coords: {},
     status: null,
-    direction: ''     
+    direction: '',
+    bounceValue: new Animated.Value(1)
   }
 
   // Retrieve Location permissions status
@@ -44,6 +45,7 @@ export default class Live extends Component {
     }
   }
 
+  // Set a new location
   setLocation = () => {
     Location.watchPositionAsync({
       enableHighAccuracy: true,
@@ -51,7 +53,14 @@ export default class Live extends Component {
       distanceInterval: 1
     }, ({ coords }) => {
       const newDirection = calculateDirection(coords.heading);
-      const { direction } = this.state;
+      const { direction, bounceValue } = this.state;
+
+      if (newDirection !== direction) {
+        Animated.sequence([
+          Animated.timing(bounceValue, { duration: 200, toValue: 1.04 }),
+          Animated.spring(bounceValue, { toValue: 1, friction: 4 })
+        ]).start();
+      }
 
       this.setState({
         coords,
@@ -101,9 +110,9 @@ export default class Live extends Component {
             <Text style={styles.header}>
               {`You're heading`}
             </Text>
-            <Text style={styles.direction}>
+            <Animated.Text style={[styles.direction, [{ scale: bounceValue }]]}>
               {direction}
-            </Text>
+            </Animated.Text>
           </View>
           <View style={styles.metricContainer}>
             <View style={styles.metric}>
