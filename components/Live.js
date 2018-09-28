@@ -71,7 +71,7 @@ export default class Live extends Component {
   }
 
   // Render different UIs based on the value of `status`
-  renderUI = (coords, status, direction) => {
+  renderUI = (coords, status, direction, bounceValue) => {
     const statusSwitch = {
       'denied': (
         <View style={styles.center}>
@@ -110,7 +110,7 @@ export default class Live extends Component {
             <Text style={styles.header}>
               {`You're heading`}
             </Text>
-            <Animated.Text style={[styles.direction, [{ scale: bounceValue }]]}>
+            <Animated.Text style={[styles.direction, { transform: [{scale: bounceValue}]}]}>
               {direction}
             </Animated.Text>
           </View>
@@ -142,9 +142,9 @@ export default class Live extends Component {
   }
     
   render() {
-    const { coords, status, direction } = this.state;
+    const { coords, status, direction, bounceValue } = this.state;
 
-    return this.renderUI(coords, status, direction);
+    return this.renderUI(coords, status, direction, bounceValue);
   }
 }
 

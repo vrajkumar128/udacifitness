@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, Button, TouchableNativeFeedback,
   TouchableOpacity, Platform, StyleSheet } from 'react-native';
-import { getMetricMetaInfo, timeToString, getDailyReminderValue } from '../utils/helpers';
+import { getMetricMetaInfo, timeToString, getDailyReminderValue,
+  clearLocalNotifications, setLocalNotification } from '../utils/helpers';
 import UdaciSlider from './UdaciSlider';
 import UdaciSteppers from './UdaciStepper';
 import DateHeader from './DateHeader';
@@ -71,7 +72,8 @@ class AddEntry extends React.Component {
       [key]: entry
     }));
 
-    // TODO: Clear local notifications
+    clearLocalNotifications()
+      .then(setLocalNotification());
 
     this.setState({
       run: 0,

@@ -1,14 +1,18 @@
 import React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, AsyncStorage } from 'react-native';
 import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from 'react-native-vector-icons';
-import { white, red, orange, blue, lightPurp, pink, gray } from './colors';
+import { white, red, orange, blue, lightPurp, pink } from './colors';
+import { Notifications, Permissions } from 'expo';
+
+// AsyncStorage key for local notifications
+const NOTIFICATION_KEY = 'UdaciFitness:notifications';
 
 // Determine whether num is between x and y
 export const isBetween = (num, x, y) => num >= x && num <= y;
 
 // Given a heading, return a cardinal direction
 export const calculateDirection = (heading) => {
-  let direction = '';
+  const headingIndex = ((heading + 22.5) / 45);
 
   const headingSwitch = {
     1: 'North',
@@ -19,32 +23,13 @@ export const calculateDirection = (heading) => {
     6: 'Southwest',
     7: 'West',
     8: 'Northwest',
+    9: 'North',
     default: 'Calculating'
   };
 
-  if (isBetween(heading, 0, 22.5)) {
-    direction = 'North';
-  } else if (isBetween(heading, 22.5, 67.5)) {
-    direction = 'North East';
-  } else if (isBetween(heading, 67.5, 112.5)) {
-    direction = 'East';
-  } else if (isBetween(heading, 112.5, 157.5)) {
-    direction = 'South East';
-  } else if (isBetween(heading, 157.5, 202.5)) {
-    direction = 'South';
-  } else if (isBetween(heading, 202.5, 247.5)) {
-    direction = 'South West';
-  } else if (isBetween(heading, 247.5, 292.5)) {
-    direction = 'West';
-  } else if (isBetween(heading, 292.5, 337.5)) {
-    direction = 'North West';
-  } else if (isBetween(heading, 337.5, 360)) {
-    direction = 'North';
-  } else {
-    direction = 'Calculating';
-  }
-
-  return direction;
+  return headingIndex
+    ? headingSwitch[headingIndex]
+    : headingSwitch['default'];
 };
 
 // Convert the current time to a string
@@ -155,6 +140,57 @@ export const getMetricMetaInfo = (metric) => {
 };
 
 // If no data has been logged today, return a reminder
-export const getDailyReminderValue = () => ({
+export const getDailyReminderValue = () => {
   today: "Don't forget to log your data today!"
+};
+
+// Clear notifications
+export const clearLocalNotifications = async () => {
+  await AsyncStorage.removeItem(NOTIFICATION_KEY);
+  Notifications.cancelAllScheduledNotificationsAsync();
+};
+
+// Define the notification to be sent
+const createNotification = () => ({
+  title: 'Log your stats!',
+  body: `Don't forget to log your stats for today!`,
+  ios: {
+    sound: true
+  },
+  android: {
+    sound: true,
+    priority: 'high',
+    sticky: false,
+    vibrate: true
+  }
 });
+
+// Set notification in AsyncStorage
+export const setLocalNotification = async () => {
+  // Check if notification has already been set
+  const rawData = await AsyncStorage.getItem(NOTIFICATION_KEY);
+  const jsonData = JSON.parse(rawData);
+
+  if (jsonData === null) {
+    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+
+    if (status === 'granted') {
+      Notifications.cancelAllScheduledNotificationsAsync(); // Prevent duplicate notifications
+      let tomorrow = new Date();
+
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(20);
+      tomorrow.setMinutes(0);
+      // Set time and frequency of notification
+      Notifications.scheduleLocalNotificationAsync(
+        createNotification(),
+        {
+          time: tomorrow,
+          repeat: 'day'
+        }
+      );
+      
+      AsyncStorage.setItem(NOTIFICATION_KEY, JSON.stringify(true));
+    }
+  }
+};

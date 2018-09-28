@@ -1,3 +1,5 @@
+import RECEIVE_ENTRIES from '../actions';
+
 // Logging middleware
 export default store => next => action => {
   if (action.type !== RECEIVE_ENTRIES) {

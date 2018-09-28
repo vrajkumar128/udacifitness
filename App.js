@@ -12,6 +12,7 @@ import { FontAwesome, Ionicons } from 'react-native-vector-icons';
 import { Constants } from 'expo';
 import EntryDetail from './components/EntryDetail';
 import Live from './components/Live';
+import { setLocalNotification } from './utils/helpers';
 
 // Create styled status bar
 const UdaciStatusBar = ({ backgroundColor, ...rest }) => (
@@ -82,6 +83,10 @@ const MainNavigator = createStackNavigator({
 });
 
 export default class App extends Component {
+  componentDidMount() {
+    setLocalNotification();
+  }
+
   render() {
     return (
       <Provider store={createStore(reducer, middleware)}>

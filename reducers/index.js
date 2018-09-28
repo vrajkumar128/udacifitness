@@ -1,8 +1,6 @@
-import { RECEIVE_ENTRIES, ADD_ENTRY } from '../actions';
-
 // Entries reducer
 export default (state = {}, action) => {
-  const reducer = {
+  const entriesReducer = {
     RECEIVE_ENTRIES: action.entries,
     ADD_ENTRY: {
       ...state,
@@ -11,5 +9,5 @@ export default (state = {}, action) => {
     default: state
   };
 
-  return reducer[action.type] || reducer['default'];
+  return entriesReducer[action.type] || entriesReducer['default'];
 };
